@@ -2,13 +2,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
     android:padding="16dp">
 
-    <TextView
+    <EditText
+        android:id="@+id/editTextIp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập địa chỉ IP" />
+
+    <Button
+        android:id="@+id/buttonSaveIp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is the IP Config Fragment"
-        android:textSize="18sp"/>
+        android:text="Lưu IP" />
+
+    <TextView
+        android:id="@+id/textViewSavedIp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="No IP saved" />
 
 </LinearLayout>

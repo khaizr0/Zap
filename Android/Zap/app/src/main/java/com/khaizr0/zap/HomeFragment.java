@@ -38,15 +38,15 @@ public class HomeFragment extends Fragment {
         buttonOn = view.findViewById(R.id.buttonOn);
         logView = view.findViewById(R.id.logView);
 
-        sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
         buttonOn.setOnClickListener(v -> {
             String savedIp = sharedPreferences.getString(KEY_SAVED_IP, null);
             if (savedIp != null) {
-                String url = "http://" + savedIp + "/relay/on";
+                String url = String.format("http://%s/relay/on", savedIp);
                 sendRequest(url);
             } else {
-                Toast.makeText(getActivity(), "IP chưa được lưu", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), "IP chưa được lưu", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                getActivity().runOnUiThread(() -> logView.setText("Request failed: " + e.getMessage()));
+                requireActivity().runOnUiThread(() -> logView.setText("Request failed: " + e.getMessage()));
                 Log.e("HomeFragment", "Request failed", e);
             }
 
@@ -71,19 +71,18 @@ public class HomeFragment extends Fragment {
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try {
                     if (response.isSuccessful()) {
-                        String responseData = response.body().string();
-                        getActivity().runOnUiThread(() -> logView.setText("Request succeeded: " + responseData));
+                        String responseData = response.body() != null ? response.body().string() : "No Response Body";
+                        requireActivity().runOnUiThread(() -> logView.append("Request succeeded: " + responseData + "\n"));
                     } else {
-                        getActivity().runOnUiThread(() -> logView.setText("Request failed with code: " + response.code()));
+                        requireActivity().runOnUiThread(() -> logView.setText("Request failed with code: " + response.code()));
                     }
                 } catch (IOException e) {
-                    getActivity().runOnUiThread(() -> logView.setText("Error reading response: " + e.getMessage()));
+                    requireActivity().runOnUiThread(() -> logView.setText("Error reading response: " + e.getMessage()));
                     Log.e("HomeFragment", "Error reading response", e);
                 } finally {
-                    response.close(); // Ensure the response is closed to avoid leaks.
+                    response.close();
                 }
             }
         });
     }
-
 }
